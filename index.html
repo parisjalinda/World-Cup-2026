@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>World Cup 2026 Pick'em 🇲🇽</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#061208;color:#e8f5e9;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+button,input,select{font-family:inherit}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:#061208;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:18px}
+.spin{width:52px;height:52px;border:4px solid #143520;border-top-color:#006847;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast{display:none;position:fixed;top:18px;right:18px;z-index:9998;padding:12px 22px;border-radius:8px;font-weight:700;font-size:14px;box-shadow:0 4px 24px rgba(0,0,0,.7);pointer-events:none}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#002d16 0%,#006847 55%,#003d20 100%);border-bottom:4px solid #CE1126;padding:14px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;box-shadow:0 3px 24px rgba(0,104,71,.5)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{font-size:38px}
+.brand-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:.5px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+#hnav{display:none;align-items:center;gap:8px;flex-wrap:wrap}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;display:inline-block;margin-right:3px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* BUTTONS */
+.btn{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid #1a5030;background:#0d2818;color:#86c99a;transition:all .15s}
+.btn:hover{border-color:#006847;color:#e8f5e9}
+.btn.active{background:#006847;border-color:#006847;color:#fff;font-weight:700}
+.btn-gold{background:linear-gradient(135deg,#d4a017,#f0c843);border:none;color:#0a1a00;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:14px}
+.btn-gold:hover{opacity:.9}
+.btn-red{background:#CE1126;border:none;color:#fff;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:12px}
+.btn-dim{background:#0d2818;border:1px solid #1a5030;color:#5a8a6a;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px}
+.btn-submit{background:linear-gradient(135deg,#CE1126,#ff2a3a);border:none;color:#fff;font-weight:900;padding:14px 40px;border-radius:10px;cursor:pointer;font-size:16px;letter-spacing:.5px;box-shadow:0 4px 20px rgba(206,17,38,.5);transition:all .2s;width:100%;margin-top:8px}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(206,17,38,.6)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* LAYOUT */
+main{max-width:960px;margin:0 auto;padding:22px 16px}
+.view{display:none}.view.on{display:block}
+.card{background:#0d2818;border:1px solid #1a5030;border-radius:12px;padding:20px}
+
+/* FORMS */
+.lbl{font-size:11px;font-weight:700;color:#5a8a6a;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;margin-top:12px;display:block}
+.lbl:first-child{margin-top:0}
+input.inp{width:100%;background:#061208;border:1px solid #1a5030;border-radius:7px;color:#e8f5e9;padding:10px 14px;font-size:14px;outline:none;transition:border .15s}
+input.inp:focus{border-color:#006847}
+select.inp{width:100%;background:#061208;border:1px solid #1a5030;border-radius:7px;color:#e8f5e9;padding:10px 14px;font-size:13px;outline:none}
+.err{color:#ff7070;font-size:12px;margin-top:6px}
+
+/* LOGIN */
+#login-wrap{max-width:440px;margin:50px auto}
+.login-hero{text-align:center;margin-bottom:28px}
+.login-hero .emo{font-size:66px;margin-bottom:8px}
+.login-hero h2{color:#fff;font-size:28px;font-weight:900}
+.login-hero p{color:rgba(255,255,255,.65);margin-top:6px;font-size:14px}
+.link-text{color:#4ade80;cursor:pointer}.link-text:hover{text-decoration:underline}
+
+/* DEADLINE BANNER */
+.deadline-banner{background:linear-gradient(135deg,#5c0011,#8b0000,#5c0011);border:2px solid #CE1126;border-radius:10px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 16px rgba(206,17,38,.3)}
+.db-icon{font-size:30px}
+.db-text h3{color:#fff;font-size:15px;font-weight:900;margin-bottom:2px}
+.db-text p{color:rgba(255,255,255,.75);font-size:12px}
+#deadline-timer{color:#ffd700;font-weight:900;font-size:14px;margin-top:4px;font-family:monospace;letter-spacing:.5px}
+
+/* SCORE PILLS */
+.score-pills{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:#0d2818;border:1px solid #1a5030;border-radius:10px;padding:8px 16px;text-align:center;min-width:64px}
+.pill.green{background:rgba(0,104,71,.25);border-color:#006847}
+.pill-lbl{font-size:9px;color:#5a8a6a;letter-spacing:1px;text-transform:uppercase}
+.pill.green .pill-lbl{color:#4ade80}
+.pill-val{font-size:22px;font-weight:900;color:#86c99a;line-height:1.1}
+.pill.green .pill-val{color:#4ade80}
+.pill-unit{font-size:9px;color:#3a6048}
+
+/* TABS */
+.tab-row{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.sec-title{color:#4ade80;font-size:22px;font-weight:900;margin-bottom:4px}
+.sec-desc{color:#5a8a6a;font-size:13px;line-height:1.6;margin-bottom:18px}
+
+/* DATE HEADER */
+.date-hdr{display:flex;align-items:center;gap:12px;margin:24px 0 10px}
+.date-hdr-line{flex:1;height:1px;background:#1a5030}
+.date-hdr-txt{font-size:12px;font-weight:700;color:#5a8a6a;white-space:nowrap;background:#061208;padding:0 12px;letter-spacing:.3px}
+
+/* GAME CARD */
+.game-card{background:#0d2818;border:1px solid #1a5030;border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.game-card.has-pick{border-color:#2d7a50}
+.game-card.submitted-pick{border-color:#4ade80;box-shadow:0 0 10px rgba(74,222,128,.15)}
+.game-card.started{opacity:.82}
+.game-top{padding:12px 16px 0}
+.game-meta-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.game-meta-left{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.venue-chip{font-size:11px;color:#5a8a6a;background:#061208;border:1px solid #1a5030;padding:2px 9px;border-radius:10px}
+.time-chip{font-size:11px;color:#86c99a;font-weight:600}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;border:1px solid;display:inline-flex;align-items:center;gap:3px}
+
+/* MATCHUP */
+.matchup{display:flex;align-items:stretch;gap:8px;padding-bottom:12px}
+.team-btn{flex:1;min-width:80px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;border-radius:10px;border:1px solid #1a5030;background:#061208;cursor:pointer;transition:all .15s}
+.team-btn:disabled{cursor:default}
+.team-btn:not(:disabled):hover{border-color:#006847;background:#0d2818}
+.team-btn.picked{border:2px solid #d4a017;background:rgba(212,160,23,.12)}
+.team-btn.winner{border:2px solid #4ade80;background:rgba(74,222,128,.1)}
+.team-btn.subbed{border:2px solid #006847;background:rgba(0,104,71,.18)}
+.team-flag{font-size:28px;line-height:1}
+.team-name{font-size:12px;font-weight:700;color:#86c99a}
+.team-btn.picked .team-name,.team-btn.winner .team-name,.team-btn.subbed .team-name{color:#fff}
+.team-sub{font-size:9px;letter-spacing:.8px;font-weight:700}
+.draw-btn{padding:10px 10px;border-radius:10px;border:1px solid #1a5030;background:#061208;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#5a8a6a;font-size:11px;font-weight:700;transition:all .15s}
+.draw-btn:disabled{cursor:default}
+.draw-btn:not(:disabled):hover{border-color:#006847}
+.draw-btn.picked{border:2px solid #d4a017;background:rgba(212,160,23,.12);color:#fff}
+.draw-btn.winner{border:2px solid #4ade80;background:rgba(74,222,128,.1);color:#fff}
+.draw-btn.subbed{border:2px solid #006847;background:rgba(0,104,71,.18);color:#fff}
+
+/* PCT */
+.pct-section{padding:8px 16px 12px;background:#050e08;border-top:1px solid #1a5030}
+.pct-lbl{font-size:10px;color:#3a6048;margin-bottom:5px}
+
+/* STATS DROPDOWN */
+.stats-toggle{padding:8px 16px;border-top:1px solid #1a5030;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:#5a8a6a;font-size:12px;user-select:none;transition:background .15s}
+.stats-toggle:hover{background:#143520;color:#86c99a}
+.stats-toggle .arr{transition:transform .2s;font-size:10px}
+.stats-toggle.open .arr{transform:rotate(180deg)}
+.stats-panel{display:none;padding:14px 16px;background:#050e08;border-top:1px solid #1a5030}
+.stats-panel.open{display:block}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.stats-grid{grid-template-columns:1fr}}
+.stats-col h4{font-size:13px;font-weight:700;margin-bottom:8px;color:#e8f5e9}
+.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #143520;color:#86c99a}
+.stat-row:last-child{border:none}
+.stat-lbl{color:#5a8a6a}.stat-val{font-weight:600;color:#e8f5e9}.stat-hi{color:#d4a017;font-weight:700}
+.h2h{margin-top:10px;padding-top:10px;border-top:1px solid #143520}
+.h2h h4{color:#d4a017;font-size:13px;font-weight:700;margin-bottom:5px}
+.h2h p{color:#5a8a6a;font-size:12px;line-height:1.6}
+
+/* SUBMIT SECTION */
+.submit-section{background:linear-gradient(135deg,#0d2818,#112e1c);border:2px solid #006847;border-radius:14px;padding:24px;margin-top:24px;text-align:center}
+.submit-section h3{color:#fff;font-size:18px;font-weight:900;margin-bottom:5px}
+.submit-section p{color:#5a8a6a;font-size:13px;margin-bottom:14px}
+.submit-stats{display:flex;justify-content:center;gap:24px;margin-bottom:16px;flex-wrap:wrap}
+.ss-item{text-align:center}
+.ss-val{font-size:28px;font-weight:900;color:#4ade80}
+.ss-lbl{font-size:10px;color:#5a8a6a;text-transform:uppercase;letter-spacing:1px}
+.submitted-badge{background:linear-gradient(135deg,#006847,#009a5e);border-radius:10px;padding:14px;color:#fff;font-weight:700;font-size:15px}
+
+/* COMMUNITY */
+.comm-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1.5fr);gap:22px;align-items:start}
+@media(max-width:580px){.comm-grid{grid-template-columns:1fr}}
+.lb-item{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0d2818;border:1px solid #1a5030;border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.lb-item:hover{border-color:#006847}
+.lb-item.sel{background:rgba(0,104,71,.22);border-color:#4ade80}
+.lb-rank{width:22px;font-weight:900;font-size:13px}
+.lb-name{flex:1;font-weight:600;font-size:14px}
+.lb-sub{font-size:11px;color:#3a6048}
+.lb-pts{color:#4ade80;font-weight:700;min-width:36px;text-align:right}
+.pct-block{background:#0d2818;border:1px solid #1a5030;border-radius:8px;padding:10px 14px;margin-bottom:10px}
+.drill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:12px}
+.drill-card{background:#0d2818;border:1px solid #1a5030;border-radius:8px;padding:10px 12px}
+.drill-card.ok{border-color:#4ade80}.drill-card.bad{border-color:#CE1126}.drill-card.hid{opacity:.4}
+.drill-vs{font-size:11px;color:#3a6048;margin-bottom:4px}
+.drill-pick{font-weight:700;font-size:13px}
+.drill-pick.ok{color:#4ade80}.drill-pick.bad{color:#CE1126}.drill-pick.muted{color:#3a6048;font-style:italic}
+
+/* KNOCKOUT SUMMARY */
+.ko-wrap{margin-top:36px;padding-top:28px;border-top:2px solid #1a5030}
+.ko-title{color:#d4a017;font-size:20px;font-weight:900;margin-bottom:6px}
+.ko-desc{color:#5a8a6a;font-size:13px;margin-bottom:18px;line-height:1.6}
+.ko-info{background:#050e08;border:1px solid #1a5030;border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:#5a8a6a;line-height:1.7}
+.ko-info strong{color:#86c99a}
+.ko-round-title{color:#4ade80;font-size:15px;font-weight:700;margin-bottom:10px;margin-top:20px;padding-bottom:6px;border-bottom:1px solid #1a5030}
+.ko-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:8px;margin-bottom:10px}
+.ko-match{background:#0d2818;border:1px dashed #1a5030;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.ko-label{font-size:9px;color:#3a6048;font-weight:700;letter-spacing:1px;min-width:40px}
+.ko-teams{flex:1;font-size:12px;color:#5a8a6a;font-style:italic}
+.ko-date{font-size:10px;color:#3a6048;text-align:right;min-width:70px;line-height:1.5}
+
+/* ADMIN */
+.ag-card{background:#0d2818;border:1px solid #1a5030;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.ag-card.done{border-color:#4ade80}
+.ag-hdr{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+.ag-opts{display:flex;gap:8px;flex-wrap:wrap}
+.ag-opt{padding:7px 14px;border-radius:7px;cursor:pointer;font-size:13px;background:#061208;border:1px solid #1a5030;color:#86c99a}
+.ag-opt.sel{background:#4ade80;border-color:#4ade80;color:#061208;font-weight:700}
+.u-row{background:#0d2818;border:1px solid #1a5030;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.u-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.u-name{font-weight:700;font-size:15px;color:#e8f5e9}
+.u-stats{font-size:12px;color:#3a6048;margin-left:8px}
+.u-pw{margin-top:7px;font-size:12px;color:#3a6048}
+.u-pw code{color:#d4a017;background:rgba(0,0,0,.3);padding:2px 8px;border-radius:4px;font-family:monospace}
+.u-edit{display:none;margin-top:10px;gap:8px}
+.stat-box-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-box{background:rgba(0,104,71,.1);border:1px solid #1a5030;border-radius:8px;padding:12px;text-align:center}
+.sb-val{font-size:26px;font-weight:900;color:#4ade80}
+.sb-lbl{font-size:11px;color:#3a6048;margin-top:2px}
+.add-game-form{background:#050e08;border:1px solid #1a5030;border-radius:10px;padding:18px;margin-bottom:20px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div style="font-size:60px">🇲🇽</div>
+  <div class="spin"></div>
+  <div style="color:#5a8a6a;font-size:13px">Connecting to Firebase…</div>
+</div>
+<div id="toast"></div>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🏆</div>
+    <div>
+      <div class="brand-name">⚽ WORLD CUP 2026 PICK'EM</div>
+      <div class="brand-sub">🇲🇽 México • 🇺🇸 USA • 🇨🇦 Canada</div>
+    </div>
+  </div>
+  <div id="hnav">
+    <button class="btn" id="nav-picks" onclick="showView('picks')">My Picks</button>
+    <button class="btn" id="nav-community" onclick="showView('community')">Community</button>
+    <button class="btn" id="nav-admin" style="display:none" onclick="showView('admin')">Admin</button>
+    <span style="font-size:12px;color:#4ade80"><span class="live-dot"></span>Live</span>
+    <span id="huser" style="color:#d4a017;font-weight:700;font-size:13px"></span>
+    <button class="btn" onclick="doLogout()">Logout</button>
+  </div>
+</header>
+
+<main>
+
+<!-- LOGIN -->
+<div id="view-login" class="view on">
+  <div id="login-wrap">
+    <div class="login-hero">
+      <div class="emo">🇲🇽</div>
+      <h2>¡Arriba México!</h2>
+      <p>Login and make your World Cup picks — works on any device, anywhere</p>
+    </div>
+    <div id="lf">
+      <div class="card">
+        <span class="lbl">Username</span>
+        <input id="li-name" class="inp" placeholder="Enter your username" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <span class="lbl">Password</span>
+        <input id="li-pw" class="inp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <div id="li-err" class="err" style="display:none"></div>
+        <button class="btn-gold" style="width:100%;margin-top:18px" onclick="doLogin()">Sign In ⚽</button>
+        <p style="text-align:center;margin-top:14px;font-size:13px;color:#5a8a6a">
+          New? <span class="link-text" onclick="toggleReg(true)">Create an account</span>
+        </p>
+      </div>
+    </div>
+    <div id="rf" style="display:none">
+      <div class="card">
+        <h3 style="color:#4ade80;margin-bottom:14px">Create Account</h3>
+        <span class="lbl">Username</span>
+        <input id="rg-name" class="inp" placeholder="Choose a username"/>
+        <span class="lbl">Password</span>
+        <input id="rg-pw" class="inp" type="password" placeholder="Choose a password" onkeydown="if(event.key==='Enter')doRegister()"/>
+        <div id="rg-err" class="err" style="display:none"></div>
+        <button class="btn-gold" style="width:100%;margin-top:18px" onclick="doRegister()">Register</button>
+        <p style="text-align:center;margin-top:12px;font-size:13px;color:#5a8a6a">
+          <span class="link-text" onclick="toggleReg(false)">← Back to login</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PICKS -->
+<div id="view-picks" class="view">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+    <div>
+      <div class="sec-title">My Picks 🇲🇽</div>
+      <div class="sec-desc" style="margin-bottom:0">Pick a winner for every group stage game, then hit <strong style="color:#CE1126">Submit All Picks</strong> at the bottom.<br>All group stage picks are due before the first game kicks off.</div>
+    </div>
+    <div class="score-pills">
+      <div class="pill green"><div class="pill-lbl">Score</div><div class="pill-val" id="my-score">0</div><div class="pill-unit">pts</div></div>
+      <div class="pill"><div class="pill-lbl">Picked</div><div class="pill-val" id="my-picked">0</div><div class="pill-unit" id="my-picked-of">/36</div></div>
+    </div>
+  </div>
+
+  <!-- Deadline banner -->
+  <div class="deadline-banner">
+    <div class="db-icon">⏰</div>
+    <div class="db-text">
+      <h3>🔒 Picks Lock: June 11, 2026 at 12:00 PM PT</h3>
+      <p>All group stage picks must be submitted before Mexico vs South Africa kicks off (the first game).</p>
+      <div id="deadline-timer">Calculating…</div>
+    </div>
+  </div>
+
+  <div id="picks-container"></div>
+
+  <!-- Submit section -->
+  <div class="submit-section" id="submit-section">
+    <h3>🦅 Submit Your Picks</h3>
+    <p>Once you submit, your picks are locked and visible to everyone. You can still browse but can't change them.</p>
+    <div class="submit-stats">
+      <div class="ss-item"><div class="ss-val" id="sub-picked">0</div><div class="ss-lbl">Picked</div></div>
+      <div class="ss-item"><div class="ss-val" id="sub-total">36</div><div class="ss-lbl">Total Games</div></div>
+      <div class="ss-item"><div class="ss-val" id="sub-remaining">36</div><div class="ss-lbl">Remaining</div></div>
+    </div>
+    <div id="submit-area">
+      <button class="btn-submit" id="submit-btn" onclick="doSubmitAllPicks()">🇲🇽 Submit All Picks — ¡Ándale!</button>
+    </div>
+  </div>
+
+  <!-- Knockout / future games summary -->
+  <div class="ko-wrap" id="knockout-section"></div>
+</div>
+
+<!-- COMMUNITY -->
+<div id="view-community" class="view">
+  <div class="sec-title">Community 🌎</div>
+  <div class="sec-desc">Picks are hidden until submitted. Once the deadline passes all picks become visible.</div>
+  <div class="comm-grid">
+    <div>
+      <h3 style="color:#4ade80;font-size:15px;margin-bottom:12px">🏅 Leaderboard</h3>
+      <div id="lb-list"></div>
+    </div>
+    <div>
+      <h3 style="color:#4ade80;font-size:15px;margin-bottom:12px">📊 Pick Percentages</h3>
+      <div id="pct-list"></div>
+    </div>
+  </div>
+  <div id="drill-wrap" style="display:none;margin-top:26px">
+    <h3 id="drill-title" style="color:#4ade80;margin-bottom:12px"></h3>
+    <div id="drill-grid" class="drill-grid"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="view-admin" class="view">
+  <div class="sec-title">Admin Panel 🛠</div>
+  <div class="sec-desc">Set results, add future games, manage users</div>
+  <div class="tab-row">
+    <button class="btn active" id="atab-results" onclick="aTab('results')">🏆 Results</button>
+    <button class="btn" id="atab-addgame" onclick="aTab('addgame')">➕ Add Game</button>
+    <button class="btn" id="atab-users" onclick="aTab('users')">👥 Users</button>
+    <button class="btn" id="atab-settings" onclick="aTab('settings')">⚙️ Settings</button>
+  </div>
+
+  <div id="ap-results"><div id="admin-games"></div></div>
+
+  <div id="ap-addgame" style="display:none">
+    <div class="add-game-form">
+      <h3 style="color:#4ade80;margin-bottom:14px">➕ Add a New Game (Knockout Round)</h3>
+      <p style="color:#5a8a6a;font-size:13px;margin-bottom:14px;line-height:1.6">
+        Once teams are known for knockout games, add them here. They will immediately appear on everyone's pick sheet with a new deadline you set.
+      </p>
+      <div class="form-row">
+        <div><span class="lbl">Home Team</span><select id="ag-home" class="inp"><option value="">— Select —</option></select></div>
+        <div><span class="lbl">Away Team</span><select id="ag-away" class="inp"><option value="">— Select —</option></select></div>
+        <div><span class="lbl">Round</span>
+          <select id="ag-round" class="inp">
+            <option value="R32">Round of 32</option>
+            <option value="R16">Round of 16</option>
+            <option value="QF">Quarterfinal</option>
+            <option value="SF">Semifinal</option>
+            <option value="F">Final</option>
+            <option value="3rd">3rd Place</option>
+          </select>
+        </div>
+        <div><span class="lbl">Match Date</span><input id="ag-date" class="inp" type="date"/></div>
+        <div><span class="lbl">Kickoff Time (PT)</span><input id="ag-time" class="inp" type="time"/></div>
+        <div><span class="lbl">Venue</span><input id="ag-venue" class="inp" type="text" placeholder="e.g. Dallas Stadium"/></div>
+        <div><span class="lbl">City</span><input id="ag-city" class="inp" type="text" placeholder="e.g. Dallas, USA"/></div>
+        <div><span class="lbl">Pick Deadline (PT)</span><input id="ag-deadline" class="inp" type="datetime-local" title="Picks must be submitted by this time"/></div>
+      </div>
+      <button class="btn-gold" onclick="doAddGame()">➕ Add Game to Pick Sheet</button>
+    </div>
+    <p style="color:#5a8a6a;font-size:12px;margin-top:4px;line-height:1.7;background:#050e08;border:1px solid #1a5030;padding:10px 14px;border-radius:8px">
+      <strong style="color:#86c99a">How future games work:</strong> After the group stage ends (June 27), you'll know which teams advance. Come here to add each knockout matchup. Each new game gets its own pick deadline — users will see it on their pick sheet and must submit before that deadline. The community percentages and leaderboard all update automatically. 🎯
+    </p>
+  </div>
+
+  <div id="ap-users" style="display:none"><div id="admin-users"></div></div>
+
+  <div id="ap-settings" style="display:none">
+    <div class="card" style="max-width:400px">
+      <h3 style="color:#4ade80;margin-bottom:14px">Admin Password</h3>
+      <div style="background:#050e08;border:1px solid #1a5030;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#86c99a">
+        Current password: <code id="show-admin-pw" style="color:#d4a017;font-family:monospace;font-size:15px;margin-left:6px"></code>
+      </div>
+      <span class="lbl">New Admin Password</span>
+      <input id="new-apw" class="inp" type="password" placeholder="New admin password"/>
+      <button class="btn-gold" style="margin-top:12px" onclick="changeAdminPw()">Update Password</button>
+    </div>
+    <div class="card" style="max-width:400px;margin-top:18px">
+      <h3 style="color:#4ade80;margin-bottom:12px">Stats</h3>
+      <div class="stat-box-grid" id="admin-stats"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase,ref,set,get,onValue,update,remove,push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBS_XhhAu_pW-ntmw8trlN2xCDibEKq7dE",
+  authDomain:"world-cup-2026-picks-f3053.firebaseapp.com",
+  projectId:"world-cup-2026-picks-f3053",
+  storageBucket:"world-cup-2026-picks-f3053.firebasestorage.app",
+  messagingSenderId:"1088235125841",
+  appId:"1:1088235125841:web:d39f523b417cfef5088c70",
+  databaseURL:"https://world-cup-2026-picks-f3053-default-rtdb.firebaseio.com"
+});
+const db = getDatabase(app);
+
+/* ── ALL TEAMS ── */
+const TEAMS = {
+  mex:{name:"Mexico",flag:"🇲🇽",color:"#006847"},rsa:{name:"South Africa",flag:"🇿🇦",color:"#007A4D"},
+  kor:{name:"South Korea",flag:"🇰🇷",color:"#CD2E3A"},cze:{name:"Czechia",flag:"🇨🇿",color:"#D7141A"},
+  can:{name:"Canada",flag:"🇨🇦",color:"#FF0000"},bih:{name:"Bosnia",flag:"🇧🇦",color:"#002395"},
+  qat:{name:"Qatar",flag:"🇶🇦",color:"#8D1B3D"},sui:{name:"Switzerland",flag:"🇨🇭",color:"#FF0000"},
+  bra:{name:"Brazil",flag:"🇧🇷",color:"#009C3B"},mar:{name:"Morocco",flag:"🇲🇦",color:"#C1272D"},
+  hai:{name:"Haiti",flag:"🇭🇹",color:"#00209F"},sco:{name:"Scotland",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",color:"#003087"},
+  usa:{name:"USA",flag:"🇺🇸",color:"#B22234"},par:{name:"Paraguay",flag:"🇵🇾",color:"#D52B1E"},
+  aus:{name:"Australia",flag:"🇦🇺",color:"#00843D"},tur:{name:"Türkiye",flag:"🇹🇷",color:"#E30A17"},
+  ger:{name:"Germany",flag:"🇩🇪",color:"#555"},cuw:{name:"Curaçao",flag:"🇨🇼",color:"#003DA5"},
+  civ:{name:"Ivory Coast",flag:"🇨🇮",color:"#F77F00"},ecu:{name:"Ecuador",flag:"🇪🇨",color:"#FFD100"},
+  ned:{name:"Netherlands",flag:"🇳🇱",color:"#AE1C28"},jpn:{name:"Japan",flag:"🇯🇵",color:"#BC002D"},
+  swe:{name:"Sweden",flag:"🇸🇪",color:"#006AA7"},tun:{name:"Tunisia",flag:"🇹🇳",color:"#E70013"},
+  bel:{name:"Belgium",flag:"🇧🇪",color:"#000"},egy:{name:"Egypt",flag:"🇪🇬",color:"#CE1126"},
+  irn:{name:"Iran",flag:"🇮🇷",color:"#239F40"},nzl:{name:"New Zealand",flag:"🇳🇿",color:"#00247D"},
+  esp:{name:"Spain",flag:"🇪🇸",color:"#AA151B"},cpv:{name:"Cape Verde",flag:"🇨🇻",color:"#003893"},
+  ksa:{name:"Saudi Arabia",flag:"🇸🇦",color:"#006C35"},uru:{name:"Uruguay",flag:"🇺🇾",color:"#5EB6E4"},
+  fra:{name:"France",flag:"🇫🇷",color:"#002395"},sen:{name:"Senegal",flag:"🇸🇳",color:"#00853F"},
+  irq:{name:"Iraq",flag:"🇮🇶",color:"#CE1126"},nor:{name:"Norway",flag:"🇳🇴",color:"#EF2B2D"},
+  arg:{name:"Argentina",flag:"🇦🇷",color:"#74ACDF"},alg:{name:"Algeria",flag:"🇩🇿",color:"#006233"},
+  aut:{name:"Austria",flag:"🇦🇹",color:"#ED2939"},jor:{name:"Jordan",flag:"🇯🇴",color:"#007A3D"},
+  por:{name:"Portugal",flag:"🇵🇹",color:"#006600"},cod:{name:"DR Congo",flag:"🇨🇩",color:"#007FFF"},
+  uzb:{name:"Uzbekistan",flag:"🇺🇿",color:"#1EB53A"},col:{name:"Colombia",flag:"🇨🇴",color:"#FCD116"},
+  eng:{name:"England",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",color:"#CF111A"},cro:{name:"Croatia",flag:"🇭🇷",color:"#FF0000"},
+  gha:{name:"Ghana",flag:"🇬🇭",color:"#006B3F"},pan:{name:"Panama",flag:"🇵🇦",color:"#DA121A"},
+};
+const T = id => TEAMS[id]||{name:id,flag:"🏳️",color:"#555"};
+
+/* ── TEAM STATS — FIFA Rankings as of April 1, 2026 ── */
+const TS = {
+  // Ranks sourced from official FIFA April 1 2026 release
+  fra:{rank:1,apps:16,wins:2,best:"Winners (1998, 2018)",nick:"Les Bleus",coach:"Didier Deschamps",star:"Kylian Mbappé",fun:"France climbed to #1 in April 2026 after back-to-back friendly wins over Brazil and Colombia."},
+  esp:{rank:2,apps:16,wins:1,best:"Winners (2010)",nick:"La Roja",coach:"Luis de la Fuente",star:"Lamine Yamal",fun:"Reigning European champions. Lamine Yamal became the youngest Euro winner at 17 in 2024."},
+  arg:{rank:3,apps:18,wins:3,best:"Winners (1978, 1986, 2022)",nick:"La Albiceleste",coach:"Lionel Scaloni",star:"Lionel Messi",fun:"Reigning World Cup champions. Messi won his first WC at age 35 in Qatar 2022."},
+  eng:{rank:4,apps:16,wins:1,best:"Winners (1966)",nick:"Three Lions",coach:"Thomas Tuchel",star:"Jude Bellingham",fun:"England's only WC win was on home soil in 1966. Bellingham became the youngest scorer at a major tournament."},
+  por:{rank:5,apps:9,wins:0,best:"3rd Place (1966)",nick:"Seleção das Quinas",coach:"Roberto Martínez",star:"Cristiano Ronaldo",fun:"Ronaldo is the all-time leading international goalscorer with 130+ goals for Portugal."},
+  bra:{rank:6,apps:22,wins:5,best:"Winners (1958, 62, 70, 94, 2002)",nick:"Seleção",coach:"Fernando Diniz",star:"Vinícius Jr.",fun:"The only nation to appear at every single World Cup. Vinícius Jr. won the 2024 Ballon d'Or."},
+  ned:{rank:7,apps:11,wins:0,best:"Runners-up (1974, 1978, 2010)",nick:"Oranje",coach:"Ronald Koeman",star:"Virgil van Dijk",fun:"The Netherlands have been to 3 finals without lifting the trophy — more than any other team."},
+  mar:{rank:8,apps:6,wins:0,best:"4th Place (2022)",nick:"Atlas Lions",coach:"Walid Regragui",star:"Achraf Hakimi",fun:"Morocco became the first African nation to reach a World Cup semi-final at Qatar 2022."},
+  bel:{rank:9,apps:14,wins:0,best:"3rd Place (2018)",nick:"Red Devils",coach:"Domenico Tedesco",star:"Kevin De Bruyne",fun:"Belgium held the #1 FIFA ranking for a record 75 consecutive months from 2015 to 2021."},
+  ger:{rank:10,apps:20,wins:4,best:"Winners (1954, 1974, 1990, 2014)",nick:"Die Mannschaft",coach:"Julian Nagelsmann",star:"Florian Wirtz",fun:"Germany/West Germany have appeared in 8 World Cup finals — the most of any nation."},
+  cro:{rank:11,apps:7,wins:0,best:"Runners-up (2018)",nick:"Vatreni",coach:"Zlatko Dalić",star:"Luka Modrić",fun:"Modrić won the 2018 Ballon d'Or after leading Croatia to the final. They also finished 3rd in 2022."},
+  col:{rank:13,apps:7,wins:0,best:"Quarterfinals (2014)",nick:"Los Cafeteros",coach:"Néstor Lorenzo",star:"James Rodríguez",fun:"James Rodríguez won the 2014 Golden Boot with 6 goals. His bicycle kick vs Uruguay is legendary."},
+  sen:{rank:14,apps:4,wins:0,best:"Quarterfinals (2002)",nick:"Lions of Teranga",coach:"Aliou Cissé",star:"Sadio Mané",fun:"Senegal are AFCON champions (2021, 2022). In 2002 they famously knocked out defending champions France."},
+  mex:{rank:15,apps:17,wins:0,best:"Quarterfinals (1970, 1986)",nick:"El Tri",coach:"Javier Aguirre",star:"Hirving Lozano",fun:"Co-host of 2026, and Estadio Azteca becomes the only stadium in history to host 3 World Cup openings."},
+  usa:{rank:16,apps:11,wins:0,best:"3rd Place (1930)",nick:"Stars & Stripes",coach:"Mauricio Pochettino",star:"Christian Pulisic",fun:"Co-hosts for 2026. The 1994 WC in the USA still holds the all-time single-edition attendance record."},
+  uru:{rank:17,apps:14,wins:2,best:"Winners (1930, 1950)",nick:"La Celeste",coach:"Marcelo Bielsa",star:"Federico Valverde",fun:"Uruguay were the original World Cup winners in 1930, defeating Argentina 4-2 in front of 93,000 fans."},
+  jpn:{rank:18,apps:8,wins:0,best:"Round of 16 (multiple)",nick:"Samurai Blue",coach:"Hajime Moriyasu",star:"Takefusa Kubo",fun:"Japan have qualified for every World Cup since 1998. At Qatar 2022 they stunned Germany and Spain."},
+  sui:{rank:19,apps:12,wins:0,best:"Quarterfinals (1934, 1938, 1954)",nick:"Nati",coach:"Murat Yakin",star:"Granit Xhaka",fun:"Switzerland beat Spain on penalties in the 2022 Round of 16 and held Brazil to a draw in the group stage."},
+  irn:{rank:21,apps:6,wins:0,best:"Group Stage",nick:"Team Melli",coach:"Amir Ghalenoei",star:"Sardar Azmoun",fun:"Iran's politically charged 2-1 win over the USA at France 1998 remains one of the most memorable WC games."},
+  tur:{rank:22,apps:3,wins:0,best:"3rd Place (2002)",nick:"Crescent Stars",coach:"Vincenzo Montella",star:"Hakan Çalhanoğlu",fun:"Turkey's bronze medal at the 2002 World Cup remains their greatest footballing achievement."},
+  ecu:{rank:23,apps:4,wins:0,best:"Quarterfinals (2006)",nick:"La Tri",coach:"Sebastián Beccacece",star:"Moisés Caicedo",fun:"Ecuador reached the quarterfinals in 2006. Moisés Caicedo is one of the best midfielders in the Premier League."},
+  aut:{rank:24,apps:7,wins:0,best:"3rd Place (1954)",nick:"Das Team",coach:"Ralf Rangnick",star:"Marcel Sabitzer",fun:"Austria finished 3rd at the 1954 World Cup. Ralf Rangnick transformed them into a top-25 world side."},
+  kor:{rank:25,apps:11,wins:0,best:"4th Place (2002)",nick:"Taeguk Warriors",coach:"Hong Myung-bo",star:"Son Heung-min",fun:"South Korea's 4th-place finish at their home 2002 World Cup shocked the world. Son is a Premier League legend."},
+  aus:{rank:27,apps:6,wins:0,best:"Quarterfinals (2006)",nick:"Socceroos",coach:"Tony Popovic",star:"Mat Ryan",fun:"Australia beat Denmark in the Round of 16 in 2022 — their first WC win since the 2006 Socceroos golden era."},
+  alg:{rank:28,apps:5,wins:0,best:"Round of 16 (2014)",nick:"Desert Foxes",coach:"Vladimir Petkovic",star:"Riyad Mahrez",fun:"Algeria famously beat West Germany 2-1 at the 1982 World Cup in one of the greatest upsets in tournament history."},
+  can:{rank:30,apps:2,wins:0,best:"Group Stage (1986)",nick:"Les Rouges",coach:"Jesse Marsch",star:"Alphonso Davies",fun:"Canada co-hosts 2026. Alphonso Davies is the fastest player ever clocked in the Bundesliga at 36.5 km/h."},
+  nor:{rank:31,apps:3,wins:0,best:"Quarterfinals (1938)",nick:"Drillo",coach:"Ståle Solbakken",star:"Erling Haaland",fun:"Erling Haaland set a Premier League record with 36 goals in a single season (2022-23) and keeps breaking records."},
+  pan:{rank:33,apps:2,wins:0,best:"Group Stage (2018)",nick:"Los Canaleros",coach:"Thomas Christiansen",star:"Adalberto Carrasquilla",fun:"Panama scored their first-ever World Cup goal in their debut in Russia 2018, drawing 1-1 with Tunisia."},
+  civ:{rank:34,apps:4,wins:0,best:"Round of 16 (2006)",nick:"Elephants",coach:"Emerse Faé",star:"Sébastien Haller",fun:"Ivory Coast won AFCON 2024 as hosts, dramatically defeating Nigeria 2-1 in the final."},
+  swe:{rank:38,apps:12,wins:0,best:"3rd Place (1950, 1994)",nick:"Blågult",coach:"Jon Dahl Tomasson",star:"Viktor Gyökeres",fun:"Viktor Gyökeres scored 54 goals in 50 games in 2023-24. Sweden missed the last two tournaments but are back."},
+  par:{rank:40,apps:9,wins:0,best:"Quarterfinals (2010)",nick:"La Albirroja",coach:"Gustavo Alfaro",star:"Miguel Almirón",fun:"Paraguay stunned Japan on penalties at South Africa 2010. They've also been WC runners-up (1930)."},
+  cze:{rank:41,apps:9,wins:0,best:"Runners-up (1934, 1962)",nick:"Lions",coach:"Ivan Hasek",star:"Patrik Schick",fun:"Czechoslovakia were WC runners-up twice. Schick scored one of Euro 2020's best goals from the halfway line."},
+  sco:{rank:43,apps:8,wins:0,best:"Group Stage",nick:"Tartan Army",coach:"Steve Clarke",star:"Andrew Robertson",fun:"Scotland have never made it past the group stage despite 8 World Cup appearances — hoping 2026 is different."},
+  tun:{rank:44,apps:6,wins:0,best:"Group Stage",nick:"Eagles of Carthage",coach:"Jalel Kadri",star:"Hannibal Mejbri",fun:"Tunisia were the first African nation to win a World Cup match when they beat Mexico 3-1 in 1978."},
+  cod:{rank:46,apps:4,wins:0,best:"Quarterfinals (1970, as Zaire)",nick:"Leopards",coach:"Sebastien Desabre",star:"Cédric Bakambu",fun:"As Zaire in 1974, a player famously ran out of the wall and kicked a Brazilian free kick upfield."},
+  uzb:{rank:50,apps:1,wins:0,best:"2026 debut",nick:"White Wolves",coach:"Srecko Katanec",star:"Eldor Shomurodov",fun:"Uzbekistan make their World Cup debut in 2026, qualifying via the inter-confederation play-offs."},
+  qat:{rank:55,apps:2,wins:0,best:"Group Stage (2022)",nick:"Maroons",coach:"Tintin Marquez",star:"Akram Afif",fun:"Qatar became the first-ever host nation to be eliminated in the group stage at the 2022 World Cup."},
+  irq:{rank:57,apps:2,wins:0,best:"Group Stage (1986)",nick:"Lions of Mesopotamia",coach:"Jesús Casas",star:"Aymen Hussein",fun:"Iraq return to the World Cup after 40 years, qualifying dramatically through the AFC play-offs."},
+  rsa:{rank:60,apps:3,wins:0,best:"Round of 16 (2010)",nick:"Bafana Bafana",coach:"Hugo Broos",star:"Percy Tau",fun:"South Africa hosted and co-opened the 2010 World Cup. They drew 1-1 with Mexico in that opening game."},
+  ksa:{rank:61,apps:7,wins:0,best:"Round of 16 (1994)",nick:"Green Falcons",coach:"Miguel Cardoso",star:"Salem Al-Dawsari",fun:"Saudi Arabia's 2-1 comeback win over Argentina at Qatar 2022 is widely called the biggest upset in WC history."},
+  jor:{rank:63,apps:1,wins:0,best:"2026 debut",nick:"Nashama",coach:"Abdallah Abu Zema",star:"Yazan Al-Naimat",fun:"Jordan make their historic World Cup debut in 2026, qualifying via the AFC inter-confederation play-offs."},
+  bih:{rank:65,apps:2,wins:0,best:"Group Stage (2014)",nick:"Dragons",coach:"Sergej Barbarez",star:"Edin Džeko",fun:"Bosnia's debut World Cup was Brazil 2014. They scored a superb goal vs Argentina but crashed out in the group stage."},
+  cpv:{rank:69,apps:1,wins:0,best:"2026 debut",nick:"Blue Sharks",coach:"Bubista",star:"Ryan Mendes",fun:"Cape Verde make their World Cup debut in 2026 after a strong CAF qualifying campaign."},
+  gha:{rank:74,apps:4,wins:0,best:"Quarterfinals (2010)",nick:"Black Stars",coach:"Otto Addo",star:"Mohammed Kudus",fun:"Suárez's deliberate handball on the goal line denied Ghana a semifinal spot in 2010 — still controversial today."},
+  cuw:{rank:82,apps:1,wins:0,best:"2026 debut",nick:"The Brave Boys",coach:"Remko Bicentini",star:"Leandro Bacuna",fun:"Curaçao make their first World Cup — a Caribbean island of just 160,000 people qualifying against all odds."},
+  hai:{rank:83,apps:2,wins:0,best:"Group Stage (1974)",nick:"Les Grenadiers",coach:"Marc Collat",star:"Frantzdy Pierrot",fun:"Haiti return to the World Cup for the first time since 1974, qualifying despite playing all home games at neutral venues."},
+  nzl:{rank:85,apps:3,wins:0,best:"Group Stage",nick:"All Whites",coach:"Darren Bazeley",star:"Chris Wood",fun:"New Zealand are the only team to finish the 2010 World Cup unbeaten (3 draws) without advancing past the group stage."},
+  egy:{rank:29,apps:4,wins:0,best:"Group Stage",nick:"Pharaohs",coach:"Hossam Hassan",star:"Mohamed Salah",fun:"Mohamed Salah is the Premier League's all-time leading scorer among active players and one of the world's best."},
+};
+const getTS = id => TS[id]||null;
+
+const H2H = {
+  "mex-rsa":"Mexico and South Africa met in the opening match of the 2010 World Cup at Soccer City, Johannesburg — it ended 1-1 in front of 84,490 fans. South Africa also beat Mexico 2-1 at the 2005 CONCACAF Gold Cup. Overall record: Mexico 2 wins, South Africa 1 win, 1 draw across 4 meetings.",
+  "kor-cze":"South Korea beat Czechoslovakia 3-0 in the 1954 World Cup group stage. The two sides have not met at a World Cup since. South Korea famously finished 4th at their home 2002 tournament.",
+  "can-bih":"Canada and Bosnia & Herzegovina have never met at a World Cup. Canada's only previous appearance was 1986, where they went out in the group stage. Bosnia debuted in 2014.",
+  "usa-par":"USA beat Paraguay 3-0 in the 2010 World Cup group stage en route to the Round of 16. Overall in World Cup play, the USA lead the head-to-head.",
+  "bra-mar":"Brazil and Morocco met in the 2022 World Cup quarterfinals — it finished 0-0 after 120 minutes and Morocco won 4-2 on penalties in a famous upset. Their first World Cup meeting.",
+  "ned-jpn":"Netherlands beat Japan 3-1 in the 2022 World Cup Round of 16. Japan had stunned Germany and Spain in the group stage. The Dutch went on to reach the quarterfinals.",
+  "bel-egy":"Belgium beat Egypt 3-0 in the 1994 World Cup group stage. A dominant performance. Belgium are ranked #9 in the world going into 2026.",
+  "esp-ksa":"Spain beat Saudi Arabia 1-0 in the 2002 World Cup group stage. Saudi Arabia then sensationally beat reigning champions Argentina 2-1 at Qatar 2022 in arguably the biggest WC upset ever.",
+  "fra-sen":"France and Senegal met in the 2002 World Cup group stage — Senegal won 1-0 in a famous upset of the reigning champions. France were knocked out; Senegal went on to reach the quarterfinals.",
+  "arg-alg":"Argentina beat Algeria 2-0 in the 2010 World Cup group stage. Messi was relatively quiet but Argentina advanced. Algeria's best World Cup came in 2014 when they reached the Round of 16.",
+  "por-cod":"Portugal and DR Congo have never met at a World Cup. Portugal, ranked #5 in the world, are heavy favourites. DR Congo qualified as CAF representatives.",
+  "eng-gha":"England beat Ghana 2-0 in the 2006 World Cup group stage. They did not meet at the 2010 World Cup. Ghana reached the quarterfinals in 2010, coming within a Suárez handball of the semis.",
+  "mex-kor":"Mexico and South Korea have met twice at World Cups. Mexico won 3-1 in 1998, and they drew 1-1 in 2014. An exciting matchup with both nations' fans known for great atmospheres.",
+  "rsa-cze":"South Africa and Czechia (as Czechoslovakia) have not met at a World Cup. South Africa's best World Cup moment remains their famous 1-1 draw with Mexico in the 2010 opening game.",
+  "bra-hai":"Brazil and Haiti have never met at a World Cup. Haiti last appeared in 1974, where they faced Italy, Argentina, and Poland. Brazil are 6-time qualifiers for the last 8 at minimum.",
+  "sco-mar":"Scotland and Morocco have not met at a World Cup. Morocco are ranked #8 in the world — Scotland will be heavy underdogs.",
+  "ger-cuw":"Germany and Curaçao have never met at a World Cup. Curaçao make their historic debut. Germany are ranked #10 and won the World Cup in 2014.",
+  "ned-swe":"Netherlands and Sweden have met twice at World Cups. They drew 0-0 in 1978 and drew 1-1 in 2006. Both nations missed recent tournaments but return strong in 2026.",
+  "bel-irn":"Belgium and Iran have never met at a World Cup. Belgium are ranked #9 in the world — Kevin De Bruyne could be playing his last tournament.",
+  "fra-irq":"France and Iraq have never met at a World Cup. Iraq last appeared in 1986. France are the #1 ranked team going into 2026.",
+  "arg-aut":"Argentina and Austria have not met at a World Cup since 1958. Reigning champions Argentina are ranked #3.",
+  "por-uzb":"Portugal and Uzbekistan have never met at any level. Uzbekistan make their World Cup debut; Portugal have Ronaldo chasing records.",
+  "eng-cro":"England and Croatia have met twice at major tournaments — Croatia beat England 2-1 after extra time in the 2018 World Cup semi-final. England avenged that with a 1-0 win at Euro 2020.",
+  "esp-uru":"Spain beat Uruguay 1-0 in the 2010 World Cup semi-final in a tight game. Both nations are major tournament pedigree sides.",
+};
+function getH2H(h,a){return H2H[`${h}-${a}`]||H2H[`${a}-${h}`]||`${T(h).name} and ${T(a).name} meet in a highly anticipated group stage clash. Both nations will be hungry for the win.`;}
+
+/* ── BASE GROUP STAGE GAMES — all times Pacific Time (PT) ── */
+// Source: Official FIFA/Fox/NBC schedule. All ET times converted: ET minus 3hrs = PT
+const BASE_GAMES = [
+  // ─ June 11 ─
+  {id:"g01",date:"2026-06-11",time:"12:00 PM",group:"A",home:"mex",away:"rsa",venue:"Estadio Azteca",city:"Mexico City, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g02",date:"2026-06-11",time:"7:00 PM",group:"A",home:"kor",away:"cze",venue:"Estadio Akron",city:"Guadalajara, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 12 ─
+  {id:"g03",date:"2026-06-12",time:"12:00 PM",group:"B",home:"can",away:"bih",venue:"BMO Field",city:"Toronto, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g04",date:"2026-06-12",time:"6:00 PM",group:"D",home:"usa",away:"par",venue:"SoFi Stadium",city:"Los Angeles, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 13 ─
+  {id:"g05",date:"2026-06-13",time:"12:00 PM",group:"B",home:"qat",away:"sui",venue:"Levi's Stadium",city:"San Francisco Bay Area, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g06",date:"2026-06-13",time:"9:00 PM",group:"C",home:"bra",away:"mar",venue:"MetLife Stadium",city:"East Rutherford, NJ, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g07",date:"2026-06-14",time:"12:00 AM",group:"C",home:"hai",away:"sco",venue:"Mercedes-Benz Stadium",city:"Atlanta, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g08",date:"2026-06-14",time:"3:00 AM",group:"D",home:"aus",away:"tur",venue:"BC Place",city:"Vancouver, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 14 ─
+  {id:"g09",date:"2026-06-14",time:"10:00 AM",group:"E",home:"ger",away:"cuw",venue:"NRG Stadium",city:"Houston, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g10",date:"2026-06-14",time:"1:00 PM",group:"F",home:"ned",away:"jpn",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g11",date:"2026-06-14",time:"7:00 PM",group:"G",home:"bel",away:"egy",venue:"Hard Rock Stadium",city:"Miami, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g12",date:"2026-06-15",time:"12:00 AM",group:"H",home:"esp",away:"cpv",venue:"Arrowhead Stadium",city:"Kansas City, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 15 ─
+  {id:"g13",date:"2026-06-15",time:"10:00 AM",group:"E",home:"civ",away:"ecu",venue:"Lincoln Financial Field",city:"Philadelphia, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g14",date:"2026-06-15",time:"1:00 PM",group:"F",home:"swe",away:"tun",venue:"Lumen Field",city:"Seattle, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g15",date:"2026-06-15",time:"4:00 PM",group:"G",home:"irn",away:"nzl",venue:"Gillette Stadium",city:"Foxborough, MA, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g16",date:"2026-06-15",time:"4:00 PM",group:"H",home:"ksa",away:"uru",venue:"Estadio BBVA",city:"Monterrey, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 16 ─
+  {id:"g17",date:"2026-06-16",time:"9:00 AM",group:"I",home:"fra",away:"sen",venue:"Gillette Stadium",city:"Foxborough, MA, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g18",date:"2026-06-16",time:"12:00 PM",group:"J",home:"arg",away:"alg",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g19",date:"2026-06-16",time:"3:00 PM",group:"I",home:"irq",away:"nor",venue:"MetLife Stadium",city:"East Rutherford, NJ, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g20",date:"2026-06-16",time:"9:00 PM",group:"J",home:"aut",away:"jor",venue:"Levi's Stadium",city:"San Francisco Bay Area, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 17 ─
+  {id:"g21",date:"2026-06-17",time:"10:00 AM",group:"K",home:"por",away:"cod",venue:"NRG Stadium",city:"Houston, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g22",date:"2026-06-17",time:"1:00 PM",group:"L",home:"eng",away:"cro",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g23",date:"2026-06-17",time:"4:00 PM",group:"L",home:"gha",away:"pan",venue:"BMO Field",city:"Toronto, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g24",date:"2026-06-17",time:"7:00 PM",group:"K",home:"uzb",away:"col",venue:"Estadio Azteca",city:"Mexico City, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 18 ─
+  {id:"g25",date:"2026-06-18",time:"9:00 AM",group:"A",home:"cze",away:"rsa",venue:"Mercedes-Benz Stadium",city:"Atlanta, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g26",date:"2026-06-18",time:"12:00 PM",group:"B",home:"sui",away:"bih",venue:"SoFi Stadium",city:"Los Angeles, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g27",date:"2026-06-18",time:"12:00 PM",group:"B",home:"can",away:"qat",venue:"BC Place",city:"Vancouver, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g28",date:"2026-06-18",time:"6:00 PM",group:"A",home:"mex",away:"kor",venue:"Estadio Akron",city:"Guadalajara, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 19 ─
+  {id:"g29",date:"2026-06-19",time:"9:00 AM",group:"E",home:"ecu",away:"cuw",venue:"Levi's Stadium",city:"San Francisco Bay Area, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g30",date:"2026-06-19",time:"12:00 PM",group:"F",home:"jpn",away:"swe",venue:"NRG Stadium",city:"Houston, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g31",date:"2026-06-19",time:"3:00 PM",group:"E",home:"ger",away:"civ",venue:"Gillette Stadium",city:"Foxborough, MA, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g32",date:"2026-06-19",time:"6:00 PM",group:"F",home:"ned",away:"tun",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 20 ─
+  {id:"g33",date:"2026-06-20",time:"9:00 AM",group:"G",home:"nzl",away:"egy",venue:"Lincoln Financial Field",city:"Philadelphia, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g34",date:"2026-06-20",time:"12:00 PM",group:"H",home:"uru",away:"cpv",venue:"Hard Rock Stadium",city:"Miami, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g35",date:"2026-06-20",time:"3:00 PM",group:"G",home:"bel",away:"irn",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g36",date:"2026-06-20",time:"6:00 PM",group:"H",home:"esp",away:"ksa",venue:"Arrowhead Stadium",city:"Kansas City, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 21 ─
+  {id:"g37",date:"2026-06-21",time:"9:00 AM",group:"I",home:"fra",away:"irq",venue:"Gillette Stadium",city:"Foxborough, MA, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g38",date:"2026-06-21",time:"12:00 PM",group:"J",home:"arg",away:"aut",venue:"SoFi Stadium",city:"Los Angeles, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g39",date:"2026-06-21",time:"3:00 PM",group:"I",home:"sen",away:"nor",venue:"Lumen Field",city:"Seattle, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g40",date:"2026-06-21",time:"9:00 PM",group:"J",home:"jor",away:"alg",venue:"NRG Stadium",city:"Houston, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 22 ─
+  {id:"g41",date:"2026-06-22",time:"9:00 AM",group:"K",home:"por",away:"uzb",venue:"Lumen Field",city:"Seattle, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g42",date:"2026-06-22",time:"1:00 PM",group:"L",home:"eng",away:"gha",venue:"Hard Rock Stadium",city:"Miami, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g43",date:"2026-06-22",time:"4:00 PM",group:"K",home:"col",away:"cod",venue:"Mercedes-Benz Stadium",city:"Atlanta, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g44",date:"2026-06-22",time:"7:00 PM",group:"L",home:"cro",away:"pan",venue:"Arrowhead Stadium",city:"Kansas City, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  // ─ June 24 ─
+  {id:"g45",date:"2026-06-24",time:"6:00 PM",group:"A",home:"cze",away:"mex",venue:"Estadio Azteca",city:"Mexico City, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g46",date:"2026-06-24",time:"6:00 PM",group:"A",home:"rsa",away:"kor",venue:"Estadio BBVA",city:"Monterrey, MEX",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g47",date:"2026-06-25",time:"9:00 AM",group:"B",home:"can",away:"sui",venue:"SoFi Stadium",city:"Los Angeles, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g48",date:"2026-06-25",time:"9:00 AM",group:"B",home:"qat",away:"bih",venue:"Hard Rock Stadium",city:"Miami, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g49",date:"2026-06-25",time:"3:00 PM",group:"C",home:"bra",away:"sco",venue:"Levi's Stadium",city:"San Francisco Bay Area, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g50",date:"2026-06-25",time:"3:00 PM",group:"C",home:"mar",away:"hai",venue:"BMO Field",city:"Toronto, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g51",date:"2026-06-26",time:"9:00 AM",group:"D",home:"usa",away:"tur",venue:"MetLife Stadium",city:"East Rutherford, NJ, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g52",date:"2026-06-26",time:"9:00 AM",group:"D",home:"par",away:"aus",venue:"BC Place",city:"Vancouver, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g53",date:"2026-06-26",time:"3:00 PM",group:"E",home:"ger",away:"ecu",venue:"Mercedes-Benz Stadium",city:"Atlanta, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g54",date:"2026-06-26",time:"3:00 PM",group:"E",home:"civ",away:"cuw",venue:"Gillette Stadium",city:"Foxborough, MA, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g55",date:"2026-06-27",time:"9:00 AM",group:"F",home:"ned",away:"swe",venue:"NRG Stadium",city:"Houston, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g56",date:"2026-06-27",time:"9:00 AM",group:"F",home:"jpn",away:"tun",venue:"Arrowhead Stadium",city:"Kansas City, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g57",date:"2026-06-27",time:"3:00 PM",group:"G",home:"bel",away:"nzl",venue:"SoFi Stadium",city:"Los Angeles, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g58",date:"2026-06-27",time:"3:00 PM",group:"G",home:"egy",away:"irn",venue:"Lumen Field",city:"Seattle, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g59",date:"2026-06-28",time:"9:00 AM",group:"H",home:"esp",away:"uru",venue:"Hard Rock Stadium",city:"Miami, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g60",date:"2026-06-28",time:"9:00 AM",group:"H",home:"cpv",away:"ksa",venue:"Arrowhead Stadium",city:"Kansas City, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g61",date:"2026-06-28",time:"3:00 PM",group:"I",home:"fra",away:"sen",venue:"AT&T Stadium",city:"Arlington, TX, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g62",date:"2026-06-28",time:"3:00 PM",group:"I",home:"nor",away:"irq",venue:"Lincoln Financial Field",city:"Philadelphia, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g63",date:"2026-06-29",time:"9:00 AM",group:"J",home:"arg",away:"jor",venue:"MetLife Stadium",city:"East Rutherford, NJ, USA",deadline:"2026-06-11T12:00:00-07:00"},
+  {id:"g64",date:"2026-06-29",time:"9:00 AM",group:"J",home:"alg",away:"aut",venue:"BC Place",city:"Vancouver, CAN",deadline:"2026-06-11T12:00:00-07:00"},
+];
+
+/* ── KNOCKOUT SCHEDULE (TBD) ── */
+const KO_ROUNDS = [
+  {round:"Round of 32",dates:"June 28 – July 3",matches:[
+    {label:"R32-1",desc:"1st Group A vs 2nd Group B",date:"Jun 28",venue:"Dallas"},
+    {label:"R32-2",desc:"1st Group C vs 2nd Group D",date:"Jun 28",venue:"New York NJ"},
+    {label:"R32-3",desc:"1st Group E vs 2nd Group F",date:"Jun 29",venue:"Los Angeles"},
+    {label:"R32-4",desc:"1st Group G vs 2nd Group H",date:"Jun 29",venue:"Miami"},
+    {label:"R32-5",desc:"1st Group I vs 2nd Group J",date:"Jun 30",venue:"Houston"},
+    {label:"R32-6",desc:"1st Group K vs 2nd Group L",date:"Jun 30",venue:"Atlanta"},
+    {label:"R32-7",desc:"1st Group B vs 2nd Group A",date:"Jul 1",venue:"Boston"},
+    {label:"R32-8",desc:"1st Group D vs 2nd Group C",date:"Jul 1",venue:"Seattle"},
+    {label:"R32-9",desc:"1st Group F vs 2nd Group E",date:"Jul 2",venue:"San Francisco"},
+    {label:"R32-10",desc:"1st Group H vs 2nd Group G",date:"Jul 2",venue:"Kansas City"},
+    {label:"R32-11",desc:"1st Group J vs 2nd Group I",date:"Jul 3",venue:"Philadelphia"},
+    {label:"R32-12",desc:"1st Group L vs 2nd Group K",date:"Jul 3",venue:"Toronto"},
+    {label:"R32-13",desc:"Best 3rd (×4 games)",date:"Jul 3",venue:"MEX venues"},
+  ]},
+  {round:"Round of 16",dates:"July 4–7",matches:[
+    {label:"R16-1",desc:"Winner R32-1 vs Winner R32-2",date:"Jul 4",venue:"Dallas"},
+    {label:"R16-2",desc:"Winner R32-3 vs Winner R32-4",date:"Jul 4",venue:"Los Angeles"},
+    {label:"R16-3",desc:"Winner R32-5 vs Winner R32-6",date:"Jul 5",venue:"New York NJ"},
+    {label:"R16-4",desc:"Winner R32-7 vs Winner R32-8",date:"Jul 5",venue:"Miami"},
+    {label:"R16-5",desc:"Winner R32-9 vs Winner R32-10",date:"Jul 6",venue:"Houston"},
+    {label:"R16-6",desc:"Winner R32-11 vs Winner R32-12",date:"Jul 6",venue:"Atlanta"},
+    {label:"R16-7",desc:"Best 3rd bracket",date:"Jul 7",venue:"Boston"},
+    {label:"R16-8",desc:"Best 3rd bracket",date:"Jul 7",venue:"Seattle"},
+  ]},
+  {round:"Quarterfinals",dates:"July 9–11",matches:[
+    {label:"QF-1",desc:"Winner R16-1 vs Winner R16-2",date:"Jul 9",venue:"Dallas"},
+    {label:"QF-2",desc:"Winner R16-3 vs Winner R16-4",date:"Jul 9",venue:"New York NJ"},
+    {label:"QF-3",desc:"Winner R16-5 vs Winner R16-6",date:"Jul 10",venue:"Los Angeles"},
+    {label:"QF-4",desc:"Winner R16-7 vs Winner R16-8",date:"Jul 11",venue:"Miami"},
+  ]},
+  {round:"Semifinals",dates:"July 14–15",matches:[
+    {label:"SF-1",desc:"Winner QF-1 vs Winner QF-2",date:"Jul 14",venue:"Dallas (AT&T Stadium)"},
+    {label:"SF-2",desc:"Winner QF-3 vs Winner QF-4",date:"Jul 15",venue:"Atlanta (Mercedes-Benz)"},
+  ]},
+  {round:"🥉 Third Place",dates:"July 18",matches:[
+    {label:"3rd",desc:"SF-1 Loser vs SF-2 Loser",date:"Jul 18",venue:"Miami"},
+  ]},
+  {round:"🏆 Final",dates:"July 19",matches:[
+    {label:"FINAL",desc:"Winner SF-1 vs Winner SF-2",date:"Jul 19",venue:"New York/New Jersey (MetLife)"},
+  ]},
+];
+
+/* ── STATE ── */
+let S={users:{},picks:{},submitted:{},results:{},extraGames:{},adminPw:"admin2026"};
+let CU=null,isAdmin=false,selLb=null,curView="login";
+let allGames=[];
+let timerInterval=null;
+
+/* ── FIREBASE ── */
+onValue(ref(db,"/"),snap=>{
+  const d=snap.val()||{};
+  S.users=d.users||{};S.picks=d.picks||{};S.submitted=d.submitted||{};
+  S.results=d.results||{};S.extraGames=d.extraGames||{};S.adminPw=d.adminPw||"admin2026";
+  allGames=[...BASE_GAMES,...Object.values(S.extraGames).sort((a,b)=>a.date.localeCompare(b.date))];
+  document.getElementById("loading").style.display="none";
+  if(CU)reRender();
+  // Populate team selects
+  populateTeamSelects();
+});
+
+function reRender(){
+  if(curView==="picks")renderPicks();
+  if(curView==="community")renderCommunity();
+  if(curView==="admin")renderAdmin();
+}
+
+/* ── HELPERS ── */
+const DEADLINE = new Date("2026-06-11T12:00:00-07:00"); // 12:00 PM PT — first kickoff (Mexico vs South Africa)
+const isDeadlinePassed=()=>new Date()>=DEADLINE;
+const hasSubmitted=u=>!!(S.submitted&&S.submitted[u]);
+const isVisible=(u,gid)=>{
+  // Visible if submitted OR deadline passed
+  if(isDeadlinePassed())return true;
+  return hasSubmitted(u);
+};
+const isPickEditable=(u,gid)=>{
+  if(isDeadlinePassed())return false;
+  if(hasSubmitted(u))return false;
+  return true;
+};
+
+function calcScore(u){
+  if(!isVisible(u,"any"))return 0;
+  return Object.entries(S.picks[u]||{}).reduce((s,[gid,p])=>s+(S.results[gid]&&p===S.results[gid]?1:0),0);
+}
+function getPct(gid){
+  const g=allGames.find(x=>x.id===gid);if(!g)return{home:0,away:0,draw:0,total:0};
+  const vis=Object.keys(S.users).filter(u=>isVisible(u,gid)&&S.picks[u]&&S.picks[u][gid]).map(u=>S.picks[u][gid]);
+  const tot=vis.length;if(!tot)return{home:0,away:0,draw:0,total:0};
+  const c=v=>vis.filter(p=>p===v).length;
+  return{home:Math.round(c(g.home)/tot*100),away:Math.round(c(g.away)/tot*100),draw:Math.round(c("draw")/tot*100),total:tot};
+}
+
+/* ── TOAST ── */
+let tTimer;
+function toast(msg,type="ok"){
+  const el=document.getElementById("toast");
+  el.textContent=msg;el.style.background=type==="err"?"#9b1c1c":"#14532d";el.style.display="block";
+  if(tTimer)clearTimeout(tTimer);tTimer=setTimeout(()=>el.style.display="none",3200);
+}
+
+/* ── COUNTDOWN TIMER ── */
+function startCountdown(){
+  if(timerInterval)clearInterval(timerInterval);
+  function update(){
+    const el=document.getElementById("deadline-timer");if(!el)return;
+    const diff=DEADLINE-new Date();
+    if(diff<=0){el.textContent="🔒 DEADLINE PASSED — Picks are locked!";clearInterval(timerInterval);return;}
+    const d=Math.floor(diff/86400000);
+    const h=Math.floor((diff%86400000)/3600000);
+    const m=Math.floor((diff%3600000)/60000);
+    const s=Math.floor((diff%60000)/1000);
+    el.textContent=`⏳ ${d}d ${h}h ${m}m ${s}s remaining`;
+  }
+  update();timerInterval=setInterval(update,1000);
+}
+
+/* ── VIEWS ── */
+window.showView=function(name){
+  curView=name;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+  document.getElementById("view-"+name).classList.add("on");
+  ["picks","community","admin"].forEach(n=>{const b=document.getElementById("nav-"+n);if(b)b.classList.toggle("active",n===name);});
+  reRender();
+};
+
+/* ── AUTH ── */
+window.toggleReg=function(show){
+  document.getElementById("lf").style.display=show?"none":"block";
+  document.getElementById("rf").style.display=show?"block":"none";
+};
+window.doLogin=async function(){
+  const name=document.getElementById("li-name").value.trim();
+  const pw=document.getElementById("li-pw").value;
+  const err=document.getElementById("li-err");err.style.display="none";
+  if(name.toLowerCase()==="admin"){
+    if(pw===S.adminPw){isAdmin=true;CU="admin";afterLogin();}
+    else{err.textContent="Wrong admin password.";err.style.display="block";}
+    return;
+  }
+  const u=S.users[name];
+  if(!u){err.textContent="User not found.";err.style.display="block";return;}
+  if(u.password!==pw){err.textContent="Wrong password.";err.style.display="block";return;}
+  CU=name;isAdmin=false;afterLogin();
+};
+window.doRegister=async function(){
+  const name=document.getElementById("rg-name").value.trim();
+  const pw=document.getElementById("rg-pw").value.trim();
+  const err=document.getElementById("rg-err");err.style.display="none";
+  if(!name||!pw){err.textContent="Name and password required.";err.style.display="block";return;}
+  if(name.toLowerCase()==="admin"){err.textContent="Reserved username.";err.style.display="block";return;}
+  if(S.users[name]){err.textContent="Username taken.";err.style.display="block";return;}
+  await set(ref(db,"users/"+name),{name,password:pw});
+  toast("Registered! You can now log in.");toggleReg(false);
+  document.getElementById("rg-name").value="";document.getElementById("rg-pw").value="";
+};
+function afterLogin(){
+  document.getElementById("li-name").value="";document.getElementById("li-pw").value="";
+  document.getElementById("hnav").style.display="flex";
+  document.getElementById("huser").textContent="👤 "+CU;
+  document.getElementById("nav-admin").style.display=isAdmin?"inline-block":"none";
+  document.getElementById("nav-picks").style.display=isAdmin?"none":"inline-block";
+  document.getElementById("nav-community").style.display=isAdmin?"none":"inline-block";
+  showView(isAdmin?"admin":"picks");
+  if(!isAdmin)startCountdown();
+}
+window.doLogout=function(){
+  CU=null;isAdmin=false;selLb=null;
+  document.getElementById("hnav").style.display="none";
+  if(timerInterval)clearInterval(timerInterval);
+  toggleReg(false);showView("login");
+};
+
+/* ── PICK SHEET ── */
+function renderPicks(){
+  const picked=Object.keys(S.picks[CU]||{}).length;
+  document.getElementById("my-score").textContent=calcScore(CU);
+  document.getElementById("my-picked").textContent=picked;
+  document.getElementById("my-picked-of").textContent="/"+allGames.length;
+  document.getElementById("sub-picked").textContent=picked;
+  document.getElementById("sub-total").textContent=allGames.length;
+  document.getElementById("sub-remaining").textContent=allGames.length-picked;
+
+  // Submit area
+  const subArea=document.getElementById("submit-area");
+  if(hasSubmitted(CU)){
+    subArea.innerHTML=`<div class="submitted-badge">✅ Picks Submitted! Good luck — ¡Vamos México! 🇲🇽</div>`;
+  } else if(isDeadlinePassed()){
+    subArea.innerHTML=`<div class="submitted-badge" style="background:linear-gradient(135deg,#5c0011,#8b0000)">🔒 Deadline passed — picks are locked.</div>`;
+  } else {
+    subArea.innerHTML=`<button class="btn-submit" onclick="doSubmitAllPicks()">🇲🇽 Submit All Picks — ¡Ándale!</button>`;
+  }
+
+  // Game cards by date
+  const byDate={};
+  allGames.forEach(g=>{if(!byDate[g.date])byDate[g.date]=[];byDate[g.date].push(g);});
+  const container=document.getElementById("picks-container");
+  container.innerHTML="";
+  for(const [date,games] of Object.entries(byDate)){
+    const d=new Date(date+"T12:00:00");
+    const ds=d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+    const dh=document.createElement("div");dh.className="date-hdr";
+    dh.innerHTML=`<div class="date-hdr-line"></div><div class="date-hdr-txt">📅 ${ds}</div><div class="date-hdr-line"></div>`;
+    container.appendChild(dh);
+    games.forEach(game=>container.appendChild(buildPickCard(game)));
+  }
+  renderKnockoutSummary();
+}
+
+function buildPickCard(game){
+  const home=T(game.home),away=T(game.away);
+  const pick=(S.picks[CU]||{})[game.id]||null;
+  const submitted=hasSubmitted(CU);
+  const dlPassed=isDeadlinePassed();
+  const locked=submitted||dlPassed;
+  const editable=!locked;
+  const result=S.results[game.id]||null;
+  const pct=locked?getPct(game.id):null;
+  let pickResult=null;
+  if(result&&pick)pickResult=pick===result?"correct":"wrong";
+
+  let badgeHtml="";
+  if(locked&&submitted)badgeHtml=mkBadge("✅ SUBMITTED","#4ade80",false);
+  else if(locked)badgeHtml=mkBadge("🔒 LOCKED","#CE1126",false);
+  else if(pick)badgeHtml=mkBadge("✏️ DRAFT","#d4a017",true);
+  else badgeHtml=mkBadge("◯ NO PICK","#2d5a3a",true);
+
+  const grpColors={A:"#e53e3e",B:"#dd6b20",C:"#38a169",D:"#3182ce",E:"#805ad5",F:"#d69e2e",G:"#e53e3e",H:"#38a169",I:"#3182ce",J:"#805ad5",K:"#dd6b20",L:"#e53e3e"};
+  const gc=grpColors[game.group]||"#006847";
+
+  const card=document.createElement("div");
+  let cls="game-card";
+  if(submitted&&pick)cls+=" submitted-pick";
+  else if(!locked&&pick)cls+=" has-pick";
+  else if(locked)cls+=" started";
+  card.className=cls;
+
+  let pctHtml="";
+  if(pct&&pct.total>0){
+    pctHtml=`<div class="pct-section">
+      <div class="pct-lbl">Community picks — ${pct.total} submitted</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:3px">
+        <span style="min-width:22px">${home.flag}</span>
+        <div style="flex:1;height:7px;background:#143520;border-radius:4px;overflow:hidden"><div style="width:${pct.home}%;height:100%;background:${home.color||'#006847'};border-radius:4px;transition:width .5s"></div></div>
+        <span style="color:#5a8a6a;min-width:28px;text-align:right">${pct.home}%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:3px">
+        <span style="min-width:22px">🤝</span>
+        <div style="flex:1;height:7px;background:#143520;border-radius:4px;overflow:hidden"><div style="width:${pct.draw}%;height:100%;background:#CE1126;border-radius:4px;transition:width .5s"></div></div>
+        <span style="color:#5a8a6a;min-width:28px;text-align:right">${pct.draw}%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px">
+        <span style="min-width:22px">${away.flag}</span>
+        <div style="flex:1;height:7px;background:#143520;border-radius:4px;overflow:hidden"><div style="width:${pct.away}%;height:100%;background:${away.color||'#3182ce'};border-radius:4px;transition:width .5s"></div></div>
+        <span style="color:#5a8a6a;min-width:28px;text-align:right">${pct.away}%</span>
+      </div>
+    </div>`;
+  }
+
+  const statsId="st-"+game.id,panId="sp-"+game.id;
+  const ts1=getTS(game.home),ts2=getTS(game.away);
+  const statsHtml=buildStats(game.home,game.away,ts1,ts2);
+
+  card.innerHTML=`
+    <div class="game-top">
+      <div class="game-meta-row">
+        <div class="game-meta-left">
+          ${badgeHtml}
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:${gc};color:#fff;font-size:9px;font-weight:900;flex-shrink:0">G${game.group}</span>
+          <span class="venue-chip">🏟 ${game.venue}</span>
+          <span class="time-chip">⏰ ${game.time} PT</span>
+        </div>
+        ${pickResult?`<span style="font-size:13px;font-weight:700;color:${pickResult==="correct"?"#4ade80":"#CE1126"}">${pickResult==="correct"?"✅ +1 pt":"❌ Wrong"}</span>`:""}
+      </div>
+      <div class="matchup">
+        ${tBtn(home,pick===game.home,editable,result===game.home,submitted&&pick===game.home,game.id,game.home)}
+        ${dBtn(pick==="draw",editable,result==="draw",submitted&&pick==="draw",game.id)}
+        ${tBtn(away,pick===game.away,editable,result===game.away,submitted&&pick===game.away,game.id,game.away)}
+      </div>
+    </div>
+    ${pctHtml}
+    <div class="stats-toggle" id="${statsId}" onclick="toggleStats('${game.id}')">
+      <span>📊 Team Stats &amp; Head-to-Head</span><span class="arr">▼</span>
+    </div>
+    <div class="stats-panel" id="${panId}">${statsHtml}</div>`;
+  return card;
+}
+
+function tBtn(team,sel,editable,isResult,subbed,gid,tid){
+  const cls="team-btn"+(isResult?" winner":subbed?" subbed":sel?" picked":"");
+  const sub=isResult?`<span class="team-sub" style="color:#4ade80">WINNER ✓</span>`:subbed?`<span class="team-sub" style="color:#4ade80">✓ SUBMITTED</span>`:sel?`<span class="team-sub" style="color:#d4a017">DRAFT</span>`:"";
+  return `<button class="${cls}" ${editable?`onclick="doSetPick('${gid}','${tid}')"`:"disabled"}><span class="team-flag">${team.flag}</span><span class="team-name">${team.name}</span>${sub}</button>`;
+}
+function dBtn(sel,editable,isResult,subbed,gid){
+  const cls="draw-btn"+(isResult?" winner":subbed?" subbed":sel?" picked":"");
+  const sub=isResult?`<span style="font-size:9px;color:#4ade80">RESULT</span>`:subbed?`<span style="font-size:9px;color:#4ade80">✓</span>`:sel?`<span style="font-size:9px;color:#d4a017">DRAFT</span>`:"";
+  return `<button class="${cls}" ${editable?`onclick="doSetPick('${gid}','draw')"`:"disabled"}><span style="font-size:22px">🤝</span><span>DRAW</span>${sub}</button>`;
+}
+function mkBadge(txt,col,dim){return `<span class="badge" style="color:${col};border-color:${col};background:${dim?"transparent":col+"22"}">${txt}</span>`;}
+
+function buildStats(hid,aid,hs,as_){
+  if(!hs)return`<p style="color:#5a8a6a;font-size:13px">Stats not available for this matchup.</p>`;
+  const ht=T(hid),at=T(aid);
+  return `<div class="stats-grid">
+    <div class="stats-col">
+      <h4>${ht.flag} ${ht.name}</h4>
+      <div class="stat-row"><span class="stat-lbl">FIFA Rank</span><span class="stat-val ${hs.rank<(as_?.rank||999)?"stat-hi":""}">#${hs.rank}</span></div>
+      <div class="stat-row"><span class="stat-lbl">World Cups</span><span class="stat-val">${hs.apps}</span></div>
+      <div class="stat-row"><span class="stat-lbl">🏆 Wins</span><span class="stat-val ${hs.wins>0?"stat-hi":""}">${hs.wins}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Best Result</span><span class="stat-val">${hs.best}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Coach</span><span class="stat-val">${hs.coach}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Star Player</span><span class="stat-val stat-hi">${hs.star}</span></div>
+      <div style="margin-top:8px;font-size:11px;color:#5a8a6a;background:#143520;padding:7px 9px;border-radius:6px;line-height:1.5">💡 ${hs.fun}</div>
+    </div>
+    <div class="stats-col">
+      <h4>${at.flag} ${at.name}</h4>
+      <div class="stat-row"><span class="stat-lbl">FIFA Rank</span><span class="stat-val ${as_?.rank<hs.rank?"stat-hi":""}">#${as_?.rank||"N/A"}</span></div>
+      <div class="stat-row"><span class="stat-lbl">World Cups</span><span class="stat-val">${as_?.apps||0}</span></div>
+      <div class="stat-row"><span class="stat-lbl">🏆 Wins</span><span class="stat-val ${as_?.wins>0?"stat-hi":""}">${as_?.wins||0}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Best Result</span><span class="stat-val">${as_?.best||"—"}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Coach</span><span class="stat-val">${as_?.coach||"—"}</span></div>
+      <div class="stat-row"><span class="stat-lbl">Star Player</span><span class="stat-val stat-hi">${as_?.star||"—"}</span></div>
+      ${as_?.fun?`<div style="margin-top:8px;font-size:11px;color:#5a8a6a;background:#143520;padding:7px 9px;border-radius:6px;line-height:1.5">💡 ${as_.fun}</div>`:""}
+    </div>
+  </div>
+  <div class="h2h"><h4>⚔️ Head-to-Head History</h4><p>${getH2H(hid,aid)}</p></div>`;
+}
+
+window.toggleStats=function(gid){
+  const tog=document.getElementById("st-"+gid),pan=document.getElementById("sp-"+gid);
+  if(!tog||!pan)return;
+  const open=pan.classList.toggle("open");tog.classList.toggle("open",open);
+};
+window.doSetPick=async function(gid,tid){
+  if(!isPickEditable(CU,gid))return toast("Picks are locked!","err");
+  await set(ref(db,`picks/${CU}/${gid}`),tid);
+};
+window.doSubmitAllPicks=async function(){
+  if(hasSubmitted(CU))return toast("Already submitted!","err");
+  if(isDeadlinePassed())return toast("Deadline has passed!","err");
+  const cnt=Object.keys(S.picks[CU]||{}).length;
+  if(cnt===0)return toast("You haven't made any picks yet!","err");
+  if(!confirm(`Submit all ${cnt} picks? Once submitted, picks are locked and visible to everyone. This cannot be undone.`))return;
+  await set(ref(db,"submitted/"+CU),{at:new Date().toISOString(),count:cnt});
+  toast("🦅 ¡Excelente! Picks submitted!");
+};
+
+/* ── KNOCKOUT SUMMARY ── */
+function renderKnockoutSummary(){
+  const el=document.getElementById("knockout-section");
+  const extraList=Object.values(S.extraGames||{});
+  el.innerHTML=`
+    <div class="ko-title">📋 Full Tournament Schedule</div>
+    <div class="ko-desc">Group stage runs June 11–27. Knockout games will be added by the admin once teams are known after June 27.</div>
+    <div class="ko-info">
+      <strong>How future games work:</strong> After the group stage ends, the admin will add each knockout matchup with a new pick deadline. Those games will appear on your pick sheet and you'll need to submit before the new deadline. Keep checking back!<br><br>
+      📍 <strong>Semifinals:</strong> Dallas (AT&T Stadium) & Atlanta (Mercedes-Benz Stadium) — July 14–15<br>
+      🥉 <strong>Third Place:</strong> Miami — July 18<br>
+      🏆 <strong>Final:</strong> New York/New Jersey (MetLife Stadium) — July 19, 2026
+    </div>
+    ${extraList.length>0?`<div class="ko-round-title">➕ Added Knockout Games</div><div class="ko-grid">${extraList.map(g=>{const home=T(g.home),away=T(g.away);return `<div class="ko-match"><span class="ko-label">${g.round||"KO"}</span><span class="ko-teams" style="color:#86c99a;font-style:normal">${home.flag} ${home.name} <span style="color:#CE1126">vs</span> ${away.flag} ${away.name}</span><span class="ko-date">${g.date}<br>${g.venue}</span></div>`;}).join("")}</div>`:""}
+    ${KO_ROUNDS.map(r=>`
+      <div class="ko-round-title">🏟 ${r.round} <span style="color:#3a6048;font-size:12px;font-weight:400">${r.dates}</span></div>
+      <div class="ko-grid">
+        ${r.matches.map(m=>`<div class="ko-match"><span class="ko-label">${m.label}</span><span class="ko-teams">${m.desc}</span><span class="ko-date">${m.date}<br><span style="font-size:9px">${m.venue}</span></span></div>`).join("")}
+      </div>`).join("")}`;
+}
+
+/* ── COMMUNITY ── */
+function renderCommunity(){
+  const users=Object.keys(S.users);
+  const lb=users.map(u=>({name:u,score:calcScore(u),sub:hasSubmitted(u)})).sort((a,b)=>b.score-a.score);
+  const lbEl=document.getElementById("lb-list");
+  lbEl.innerHTML=lb.length?"":`<p style="color:#3a6048;font-size:13px">No users yet.</p>`;
+  lb.forEach((u,i)=>{
+    const rc=i===0?"#FFD700":i===1?"#C0C0C0":i===2?"#CD7F32":"#3a6048";
+    const row=document.createElement("div");
+    row.className="lb-item"+(selLb===u.name?" sel":"");
+    row.innerHTML=`<span class="lb-rank" style="color:${rc}">#${i+1}</span><span class="lb-name">${u.name}</span><span class="lb-sub">${u.sub?"✅ Submitted":"📝 Draft"}</span><span class="lb-pts">${u.score}pts</span>`;
+    row.onclick=()=>{selLb=selLb===u.name?null:u.name;renderCommunity();};
+    lbEl.appendChild(row);
+  });
+
+  const pctEl=document.getElementById("pct-list");pctEl.innerHTML="";
+  const vis=allGames.filter(g=>getPct(g.id).total>0);
+  if(!vis.length){pctEl.innerHTML='<p style="color:#3a6048;font-size:13px">No submitted picks yet!</p>';}
+  vis.forEach(game=>{
+    const home=T(game.home),away=T(game.away),pct=getPct(game.id);
+    const block=document.createElement("div");block.className="pct-block";
+    block.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:12px">
+        <span style="color:#86c99a;font-weight:600">${home.flag} ${home.name} vs ${away.flag} ${away.name}</span>
+        <span style="font-size:10px;color:#4ade80">${pct.total} picks</span>
+      </div>
+      ${pBar(home.flag+" "+home.name,pct.home,home.color)}
+      ${pBar("Draw 🤝",pct.draw,"#CE1126")}
+      ${pBar(away.flag+" "+away.name,pct.away,away.color)}`;
+    pctEl.appendChild(block);
+  });
+
+  const dw=document.getElementById("drill-wrap");
+  if(!selLb){dw.style.display="none";return;}
+  dw.style.display="block";
+  document.getElementById("drill-title").textContent="🔍 "+selLb+"'s Picks";
+  const grid=document.getElementById("drill-grid");grid.innerHTML="";
+  allGames.forEach(game=>{
+    const visible=isVisible(selLb,game.id);
+    const pick=S.picks[selLb]&&S.picks[selLb][game.id];
+    const home=T(game.home),away=T(game.away);
+    const result=S.results[game.id];
+    const ok=result&&pick&&pick===result,bad=result&&pick&&pick!==result;
+    const card=document.createElement("div");
+    card.className="drill-card"+(ok?" ok":bad?" bad":"")+(visible?"":" hid");
+    let ph="";
+    if(visible&&pick){const pt=pick==="draw"?null:T(pick);const lbl=pick==="draw"?"🤝 Draw":(pt?pt.flag+" "+pt.name:pick);ph=`<div class="drill-pick ${ok?"ok":bad?"bad":""}">${lbl}${ok?" ✅":bad?" ❌":""}</div>`;}
+    else if(!visible)ph=`<div class="drill-pick muted">📝 Not submitted</div>`;
+    else ph=`<div class="drill-pick muted">No pick</div>`;
+    card.innerHTML=`<div class="drill-vs">${home.flag} vs ${away.flag}</div>${ph}`;
+    grid.appendChild(card);
+  });
+}
+function pBar(label,pct,color){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px;font-size:11px">
+    <span style="color:#5a8a6a;min-width:110px">${label}</span>
+    <div style="flex:1;height:6px;background:#143520;border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${color||'#006847'};border-radius:3px;transition:width .4s"></div></div>
+    <span style="color:#5a8a6a;min-width:28px;text-align:right;font-weight:700">${pct}%</span>
+  </div>`;
+}
+
+/* ── ADMIN ── */
+window.aTab=function(tab){
+  ["results","addgame","users","settings"].forEach(t=>{
+    document.getElementById("ap-"+t).style.display=t===tab?"block":"none";
+    document.getElementById("atab-"+t).classList.toggle("active",t===tab);
+  });
+};
+function renderAdmin(){renderAdminGames();renderAdminUsers();renderAdminStats();
+  const el=document.getElementById("show-admin-pw");if(el)el.textContent=S.adminPw;
+}
+function renderAdminGames(){
+  const container=document.getElementById("admin-games");container.innerHTML="";
+  const byDate={};allGames.forEach(g=>{if(!byDate[g.date])byDate[g.date]=[];byDate[g.date].push(g);});
+  for(const [date,games] of Object.entries(byDate)){
+    const d=new Date(date+"T12:00:00");
+    const ds=d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+    const dh=document.createElement("div");dh.className="date-hdr";
+    dh.innerHTML=`<div class="date-hdr-line"></div><div class="date-hdr-txt">📅 ${ds}</div><div class="date-hdr-line"></div>`;
+    container.appendChild(dh);
+    games.forEach(game=>{
+      const home=T(game.home),away=T(game.away),result=S.results[game.id]||null,pct=getPct(game.id);
+      const card=document.createElement("div");card.className="ag-card"+(result?" done":"");
+      const opts=[{id:game.home,lbl:`${home.flag} ${home.name}`},{id:"draw",lbl:"🤝 Draw"},{id:game.away,lbl:`${away.flag} ${away.name}`}];
+      const optBtns=opts.map(o=>`<button class="ag-opt${result===o.id?" sel":""}" onclick="doSetResult('${game.id}','${o.id}')">${o.lbl}</button>`).join("");
+      const resBadge=result?`<span style="color:#4ade80;font-weight:700;font-size:13px">✅ ${result==="draw"?"Draw":T(result).flag+" "+T(result).name}</span><button class="btn-red" style="margin-left:6px" onclick="doClearResult('${game.id}')">Clear</button>`:"";
+      const pi=pct.total?`<div style="margin-top:8px;font-size:11px;color:#3a6048">${home.flag} ${pct.home}% · Draw ${pct.draw}% · ${away.flag} ${pct.away}% — ${pct.total} picks</div>`:"";
+      card.innerHTML=`<div class="ag-hdr"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-weight:700">${home.flag} ${home.name} vs ${away.flag} ${away.name}</span><span style="font-size:11px;color:#3a6048">${game.time} PT · ${game.venue}</span></div><div style="display:flex;align-items:center;gap:6px">${resBadge}</div></div><div class="ag-opts">${optBtns}</div>${pi}`;
+      container.appendChild(card);
+    });
+  }
+}
+window.doSetResult=async function(gid,tid){await set(ref(db,"results/"+gid),tid);toast("Result saved ✓");};
+window.doClearResult=async function(gid){await remove(ref(db,"results/"+gid));toast("Cleared");};
+
+function populateTeamSelects(){
+  const sorted=Object.entries(TEAMS).sort((a,b)=>a[1].name.localeCompare(b[1].name));
+  ["ag-home","ag-away"].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML=`<option value="">— Select Team —</option>`+sorted.map(([k,v])=>`<option value="${k}">${v.flag} ${v.name}</option>`).join("");
+    if(cur)sel.value=cur;
+  });
+}
+
+window.doAddGame=async function(){
+  const home=document.getElementById("ag-home").value;
+  const away=document.getElementById("ag-away").value;
+  const round=document.getElementById("ag-round").value;
+  const date=document.getElementById("ag-date").value;
+  const time=document.getElementById("ag-time").value;
+  const venue=document.getElementById("ag-venue").value.trim();
+  const city=document.getElementById("ag-city").value.trim();
+  const dl=document.getElementById("ag-deadline").value;
+  if(!home||!away||!date||!time||!venue||!dl){return toast("Fill in all fields (home, away, date, time, venue, deadline)","err");}
+  if(home===away){return toast("Home and away teams must be different","err");}
+  // Format time nicely
+  const [hh,mm]=time.split(":");
+  const hr=parseInt(hh);const ampm=hr>=12?"PM":"AM";const hr12=hr%12||12;
+  const timeStr=`${hr12}:${mm} ${ampm}`;
+  const newGame={id:"ko_"+Date.now(),date,time:timeStr,group:round,home,away,venue,city:city||venue,deadline:new Date(dl+"-07:00").toISOString(),round};
+  await set(ref(db,"extraGames/"+newGame.id),newGame);
+  toast("✅ Game added to pick sheet!");
+  ["ag-home","ag-away","ag-date","ag-time","ag-venue","ag-city","ag-deadline"].forEach(id=>{const e=document.getElementById(id);if(e)e.value="";});
+};
+
+function renderAdminUsers(){
+  const container=document.getElementById("admin-users");
+  const users=Object.keys(S.users);
+  container.innerHTML=users.length?"":`<p style="color:#3a6048">No users yet.</p>`;
+  users.forEach(uname=>{
+    const u=S.users[uname];const score=calcScore(uname);
+    const tp=Object.keys(S.picks[uname]||{}).length;const sub=hasSubmitted(uname);
+    const row=document.createElement("div");row.className="u-row";row.id="ur-"+uname;
+    row.innerHTML=`
+      <div class="u-top">
+        <div><span class="u-name">${uname}</span><span class="u-stats">${tp} picks · ${sub?"✅ submitted":"📝 draft"} · ${score} pts</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-dim" onclick="toggleUEdit('${uname}')">🔑 Reset PW</button>
+          <button class="btn-red" onclick="doDelUser('${uname}')">🗑️</button>
+        </div>
+      </div>
+      <div class="u-pw">Password: <code>${u.password}</code></div>
+      <div class="u-edit" id="ue-${uname}">
+        <input id="upw-${uname}" class="inp" placeholder="New password" style="flex:1" onkeydown="if(event.key==='Enter')doResetPw('${uname}')"/>
+        <button class="btn-gold" onclick="doResetPw('${uname}')">Save</button>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+window.toggleUEdit=function(u){const el=document.getElementById("ue-"+u);el.style.display=el.style.display==="flex"?"none":"flex";};
+window.doResetPw=async function(u){
+  const pw=document.getElementById("upw-"+u).value.trim();
+  if(!pw)return toast("Enter a password","err");
+  await update(ref(db,"users/"+u),{password:pw});toast("Password updated for "+u);
+};
+window.doDelUser=async function(u){
+  if(!confirm(`Delete user "${u}"?`))return;
+  await remove(ref(db,"users/"+u));await remove(ref(db,"picks/"+u));await remove(ref(db,"submitted/"+u));
+  toast(u+" deleted");
+};
+function renderAdminStats(){
+  const tp=Object.values(S.picks).reduce((s,p)=>s+Object.keys(p).length,0);
+  const sub=Object.keys(S.submitted||{}).length;
+  document.getElementById("admin-stats").innerHTML=`
+    <div class="stat-box"><div class="sb-val">${Object.keys(S.users).length}</div><div class="sb-lbl">Users</div></div>
+    <div class="stat-box"><div class="sb-val">${sub}</div><div class="sb-lbl">Submitted</div></div>
+    <div class="stat-box"><div class="sb-val">${Object.keys(S.results).length}</div><div class="sb-lbl">Results Set</div></div>
+    <div class="stat-box"><div class="sb-val">${tp}</div><div class="sb-lbl">Total Picks</div></div>`;
+}
+window.changeAdminPw=async function(){
+  const pw=document.getElementById("new-apw").value.trim();
+  if(!pw)return toast("Enter a new password","err");
+  await set(ref(db,"adminPw"),pw);
+  document.getElementById("new-apw").value="";toast("Admin password updated ✓");
+};
+</script>
+</body>
+</html>
