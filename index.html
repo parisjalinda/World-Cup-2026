@@ -4,6 +4,33 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>World Cup 2026 Pick'em 🇲🇽</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="WC2026 Picks"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#006847"/>
+<meta name="description" content="World Cup 2026 group stage pick'em — pick every match, compete with friends!"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>"/>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNy4yLWMwMDAgNzkuMWI2NWE3OWI0LCAyMDIyLzA2LzEzLTE3OjQ2OjE0ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjMuNSAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo5NzM5QkY2OTI0RkMxMUVEODI4NkE5NkQ1NDUxRkQ0MCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo5NzM5QkY2QTI0RkMxMUVEODI4NkE5NkQ1NDUxRkQ0MCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjk3MzlCRjY3MjRGQzExRUQ4Mjg2QTk2RDU0NTFGRDQwIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjk3MzlCRjY4MjRGQzExRUQ4Mjg2QTk2RDU0NTFGRDQwIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAOw=="/>
+<script>
+// Register minimal service worker for PWA offline support
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    // Inline service worker as blob
+    const sw=`
+      const CACHE='wc2026-v1';
+      self.addEventListener('install',e=>e.waitUntil(
+        caches.open(CACHE).then(c=>c.addAll(['/']))
+      ));
+      self.addEventListener('fetch',e=>e.respondWith(
+        fetch(e.request).catch(()=>caches.match(e.request))
+      ));
+    `;
+    const blob=new Blob([sw],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+  });
+}
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#061208;color:#e8f5e9;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
@@ -448,7 +475,7 @@ const TS = {
   arg:{rank:3,apps:18,wins:3,best:"Winners (1978, 1986, 2022)",nick:"La Albiceleste",coach:"Lionel Scaloni",star:"Lionel Messi",fun:"Reigning World Cup champions. Messi won his first WC at age 35 in Qatar 2022."},
   eng:{rank:4,apps:16,wins:1,best:"Winners (1966)",nick:"Three Lions",coach:"Thomas Tuchel",star:"Jude Bellingham",fun:"England's only WC win was on home soil in 1966. Bellingham became the youngest scorer at a major tournament."},
   por:{rank:5,apps:9,wins:0,best:"3rd Place (1966)",nick:"Seleção das Quinas",coach:"Roberto Martínez",star:"Cristiano Ronaldo",fun:"Ronaldo is the all-time leading international goalscorer with 130+ goals for Portugal."},
-  bra:{rank:6,apps:22,wins:5,best:"Winners (1958, 62, 70, 94, 2002)",nick:"Seleção",coach:"Fernando Diniz",star:"Vinícius Jr.",fun:"The only nation to appear at every single World Cup. Vinícius Jr. won the 2024 Ballon d'Or."},
+  bra:{rank:6,apps:22,wins:5,best:"Winners (1958, 62, 70, 94, 2002)",nick:"Seleção",coach:"Fernando Diniz",star:"Vinícius Jr.",fun:"The only nation to appear at every single World Cup since 1930. Vinícius Jr. won the 2024 FIFA Best Men's Player award — he was runner-up to Rodri for the Ballon d'Or after a remarkable season with Real Madrid."},
   ned:{rank:7,apps:11,wins:0,best:"Runners-up (1974, 1978, 2010)",nick:"Oranje",coach:"Ronald Koeman",star:"Virgil van Dijk",fun:"The Netherlands have been to 3 finals without lifting the trophy — more than any other team."},
   mar:{rank:8,apps:6,wins:0,best:"4th Place (2022)",nick:"Atlas Lions",coach:"Walid Regragui",star:"Achraf Hakimi",fun:"Morocco became the first African nation to reach a World Cup semi-final at Qatar 2022."},
   bel:{rank:9,apps:14,wins:0,best:"3rd Place (2018)",nick:"Red Devils",coach:"Domenico Tedesco",star:"Kevin De Bruyne",fun:"Belgium held the #1 FIFA ranking for a record 75 consecutive months from 2015 to 2021."},
